@@ -1,0 +1,70 @@
+# Sample data
+bella <- c(55, 78, 84, 74, 66)
+francis <- c(94, 85, 65, 66, 58)
+
+# X-axis labels as Date objects
+xlabels <- as.Date(c("2023-05-29", "2023-05-30", "2023-05-31", "2023-06-01", "2023-06-02"))
+
+# Plot Bella's data
+plot(
+  xlabels,
+  bella,
+  type = "o",                       # 'o' for markers and lines
+  col = "blue",                     # line and marker color
+  pch = 19,                         # marker shape (filled circles)
+  lty = 2,                          # line style (dashed)
+  lwd = 1.5,                        # line width
+  ylim = c(0, 100),                 # y-axis limits
+  xlab = "Week days",               # x-axis label
+  ylab = "Student scores %",        # y-axis label
+  main = "WEEKLY SCORES OF TOP TWO STUDENTS IN MATHS",  # main title
+  sub = "Orange: Bella, Magenta: Francis",             # subtitle
+  font.main = 1,                    # bold main title
+  font.lab = 2,                     # bold axis labels
+  font.sub = 3,                     # italic subtitle
+)
+
+# Plot Francis's data
+lines(
+    xlabels,
+    type = "o", 
+    francis,
+    col = "magenta",
+    pch = 19,
+    lty = 2,
+    lwd = 1.5
+)
+
+# Add data labels
+text(
+  x = xlabels,
+  y = bella,
+  labels = bella,
+  pos = 3,                          # position above the point
+  col = "blue",                     # label color
+  cex = 0.8                         # label size
+)
+
+text(
+  x = xlabels,
+  y = francis,
+  labels = francis,
+  pos = 3,
+  col = "magenta",
+  cex = 0.8
+)
+
+# Add legend
+legend(
+  "topright",
+  legend = c("Bella", "Francis"),
+  col = c("blue", "magenta"),
+  pch = 19,
+  lty = 2,
+  lwd = 1.5
+)
+
+# Add a grid
+grid(col = "cyan")
+
+# Display the plot
