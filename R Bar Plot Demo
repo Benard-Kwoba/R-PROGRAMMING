@@ -1,0 +1,36 @@
+library(ggplot2)
+
+set.seed(42)  # Setting random seed for reproducibility
+total_votes <- 1529
+candidates <- 4
+probs <- c(0.32, 0.59, 0.06, 0.03)  # Given each individual's probability scores out of the total votes
+votes <- rmultinom(1, total_votes, probs)
+
+# Create a data frame for the plot
+data <- data.frame(
+  Candidate = c("William Ruto", "Raila Odinga", "George\nWajackoyah", "David Mwaure"),
+  Votes = votes
+)
+
+# Create the bar plot with a grey background
+bar_plot <- ggplot(data, aes(x = Candidate, y = Votes, fill = Candidate)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = Votes), vjust = -0.5, size = 5, color = "red", fontface = "bold") +
+  scale_fill_manual(values = c("William Ruto" = "yellow", "Raila Odinga" = "orange", "George Wajackoyah" = "green", "David Mwaure" = "white")) +
+  labs(
+    x = "Candidates",
+    y = "Number of votes",
+    title = "PRESIDENTIAL RESULTS FOR POLLING STATION X"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(color = "blue", face = "bold"),
+    axis.text.x = element_text(color = "maroon", face = "italic"),
+    axis.text.y = element_text(color = "maroon", face = "italic"),
+    axis.title.x = element_text(color = "blue", face = "italic"),
+    axis.title.y = element_text(color = "blue", face = "italic"),
+    plot.background = element_rect(fill = "grey")  # Set the background color to grey
+  )
+
+# Show the plot
+print(bar_plot)
