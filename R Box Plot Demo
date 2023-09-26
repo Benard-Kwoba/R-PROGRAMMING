@@ -1,0 +1,33 @@
+# Create sample data for PM2.5 pollution levels in different cities
+cities <- c("Mombasa", "Kisumu", "Nakuru", "Nairobi")
+pm25_data <- list(
+  "Mombasa" = c(12, 18, 22, 27, 31, 38, 40, 45, 50, 55),
+  "Kisumu" = c(10, 15, 20, 24, 29, 35, 42, 48, 54, 60),
+  "Nakuru" = c(8, 14, 18, 22, 28, 35, 38, 42, 46, 52),
+  "Nairobi" = c(15, 20, 25, 30, 35, 40, 45, 50, 55, 60)
+)
+
+# Create a box plot with customized appearance
+boxplot(pm25_data, 
+        main = "PM2.5 Pollution Levels in Different Cities",
+        xlab = "Cities", ylab = "PM2.5 Level (\u03BCg/m\u00B3)",  # \u03BC - unicode for µ, \u00B3 for ³
+        col = c("lightblue", "lightgreen", "lightyellow", "lightcoral"),  # Custom box colors
+        border = "black",
+        names = cities,
+        notch = FALSE,  #  if notch = TRUE and Warning message = "some notches went outside hinges ('box')", set notch=FALSE
+        outline = TRUE,  # Show potential outliers
+        horizontal = FALSE,  # Vertical box plot
+        medcol = "red",  # Median line color
+        whisklty = 2,  # Whisker line style (dashed)
+        whiskcol = "blue",  # Whisker line color
+        staplelty = 3,  # Staples (box edges) line style (dotted)
+        staplecol = "#B8255F"  # Staples (box edges) line color
+)
+
+# Add a legend for box colors
+# legend("topleft", legend = unique(cities), fill = c("lightblue", "lightgreen", "lightyellow", "lightcoral"), title = "Cities")
+
+# Customize the appearance with grid lines, custom axis labels, and a title
+grid()
+axis(1, at = 1:length(cities), labels = cities)  # 1 - for x axis(2 for y), at - position to place the labels
+# use: title(legend, "Cities") if legend is set
