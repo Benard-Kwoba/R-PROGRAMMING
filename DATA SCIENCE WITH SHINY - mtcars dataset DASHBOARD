@@ -4,8 +4,9 @@ library(ggplot2)
 library(leaflet)  # Load the leaflet library
 
 # Load the extended imaginary air quality dataset
-mydata <- read.csv("air_quality_kenya_extended.csv")
+mydata <- read.csv("air_quality_kenya.csv")
 
+# _______________"air_quality_kenya.csv"___________________
 #Date,Location,PM2.5,PM10,NO2,SO2,CO,Latitude,Longitude
 #2023-08-01,Nairobi,18.5,27.2,12.3,3.2,0.8,-1.286389,36.817223
 #2023-08-01,Kisumu,12.1,20.5,9.8,2.5,0.6,-0.102222,34.761944
@@ -27,7 +28,7 @@ mydata <- read.csv("air_quality_kenya_extended.csv")
 #2023-08-04,Mombasa,24.4,35.5,15.5,4.0,1.1,-4.043056,39.668889
 #2023-08-04,Nakuru,14.6,22.4,11.1,2.9,0.7,-0.303611,36.080556
 #2023-08-04,Eldoret,13.5,22.5,10.5,2.7,0.7,0.520000,35.269444
-
+# ____________________________________________________________
 
 
 
