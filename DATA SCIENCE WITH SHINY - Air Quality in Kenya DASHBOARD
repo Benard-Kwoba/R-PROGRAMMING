@@ -1,7 +1,8 @@
 library(shiny)
 library(DT)
 library(ggplot2)
-library(leaflet)  # Load the leaflet library
+library(leaflet)
+library(plotly)
 
 # Load the extended imaginary air quality dataset
 mydata <- read.csv("air_quality_kenya.csv")
@@ -30,11 +31,6 @@ mydata <- read.csv("air_quality_kenya.csv")
 #2023-08-04,Eldoret,13.5,22.5,10.5,2.7,0.7,0.520000,35.269444
 # ____________________________________________________________
 
-
-
-# Load the extended imaginary air quality dataset
-mydata <- read.csv("air_quality_kenya.csv")
-
 # Define UI
 ui <- fluidPage(
   titlePanel("Kenya Air Quality Dashboard"),
@@ -54,13 +50,6 @@ ui <- fluidPage(
       # Create a tabsetPanel for different inputs
       tabsetPanel(
         id = "tabs",
-        tabPanel("Individual City Plot",
-                 # Input: Select measurement for all cities comparison
-                 selectInput("all_cities_measurement", "Select Measurement for All Cities Comparison:", 
-                             choices = colnames(mydata)[3:7]),
-                 
-                 # Input: Button to plot all cities comparison
-                 actionButton("plot_all_cities_button", "Plot All Cities Comparison")),
         tabPanel("All Cities Comparison",
                  # Input: Select parameter for all cities comparison
                  selectInput("all_cities_parameter", "Select Parameter for All Cities Comparison:", 
@@ -78,8 +67,11 @@ ui <- fluidPage(
       # Output: Plot
       uiOutput("selected_plot_ui"),
       
-      # Output: Barplot for all cities comparison
-      plotOutput("all_cities_barplot")
+      # Output: Pie chart for all cities comparison
+      plotlyOutput("all_cities_piechart"),
+      
+      # Output: Boxplot for all cities comparison
+      plotOutput("all_cities_boxplot")
     )
   )
 )
@@ -146,24 +138,42 @@ server <- function(input, output, session) {
       geom_text(aes(label = round(.data[[input$pollutant]], 1)), position = position_dodge(width = 0.75), vjust = -0.5, size = 3) +
       labs(title = paste(input$pollutant, "LEVELS FOR",  toupper(input$city)),
            x = "Date", y = input$pollutant) +
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
   })
   
   # Create a reactive dataset for all cities
   all_cities_data <- reactive({
     mydata %>%
-      filter(.data[[input$all_cities_measurement]] > 0)
+      filter(.data[[input$all_cities_parameter]] > 0)
   })
   
-  # Render barplot for all cities comparison when the button is clicked
-  output$all_cities_barplot <- renderPlot({
+  # Render pie chart for all cities comparison
+  output$all_cities_piechart <- renderPlotly({
     if (nrow(all_cities_data()) > 0) {
-      ggplot(all_cities_data(), aes(x = Location, y = .data[[input$all_cities_measurement]])) +
-        geom_bar(stat = "identity", fill = "skyblue") +
-        geom_text(aes(label = round(.data[[input$all_cities_measurement]], 1)), vjust = -0.5, size = 3) +
-        labs(title = paste("Bar Chart for", input$all_cities_measurement),
-             x = "City", y = input$all_cities_measurement) +
+      plot_data <- all_cities_data()
+      plot_ly(plot_data, labels = ~Location, values = ~.data[[input$all_cities_parameter]], type = "pie") %>%
+        layout(title = paste("Pie Chart for", input$all_cities_parameter))
+    } else {
+      # If no data is available, display a message
+      plot(NULL, xlim = c(0, 1), ylim = c(0, 1), type = "n", xlab = "", ylab = "")
+      text(0.5, 0.5, "No data available for pie chart.", cex = 1.2, col = "red", font = 2)
+    }
+  })
+  
+  # Render boxplot for all cities comparison
+  output$all_cities_boxplot <- renderPlot({
+    if (nrow(all_cities_data()) > 0) {
+      plot_data <- all_cities_data()
+      ggplot(plot_data, aes(x = Location, y = .data[[input$all_cities_parameter]], fill = Location)) +
+        geom_boxplot() +
+        geom_text(aes(label = round(.data[[input$all_cities_parameter]], 1)), position = position_dodge(width = 0.75), vjust = -0.5, size = 3) +
+        labs(title = paste("Boxplot for", input$all_cities_parameter),
+             x = "City", y = input$all_cities_parameter) +
         theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    } else {
+      # If no data is available, display a message
+      plot(NULL, xlim = c(0, 1), ylim = c(0, 1), type = "n", xlab = "", ylab = "")
+      text(0.5, 0.5, "No data available for boxplot.", cex = 1.2, col = "red", font = 2)
     }
   })
 }
