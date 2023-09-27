@@ -1,69 +1,111 @@
 library(shiny)
-library(dplyr)
 library(DT)
 library(ggplot2)
+library(leaflet)  # Load the leaflet library
 
-# Load the mtcars dataset
-data(mtcars)
+# Load the extended imaginary air quality dataset
+mydata <- read.csv("air_quality_kenya_extended.csv")
+
+#Date,Location,PM2.5,PM10,NO2,SO2,CO,Latitude,Longitude
+#2023-08-01,Nairobi,18.5,27.2,12.3,3.2,0.8,-1.286389,36.817223
+#2023-08-01,Kisumu,12.1,20.5,9.8,2.5,0.6,-0.102222,34.761944
+#2023-08-01,Mombasa,24.3,35.7,15.6,4.1,1.1,-4.043056,39.668889
+#2023-08-01,Nakuru,14.8,22.6,11.2,2.9,0.7,-0.303611,36.080556
+#2023-08-01,Eldoret,13.2,21.8,10.6,2.7,0.7,0.520000,35.269444
+#2023-08-02,Nairobi,17.9,26.5,11.8,3.1,0.7,-1.286389,36.817223
+#2023-08-02,Kisumu,11.8,19.8,9.6,2.4,0.5,-0.102222,34.761944
+#2023-08-02,Mombasa,23.5,34.2,15.0,3.9,1.0,-4.043056,39.668889
+#2023-08-02,Nakuru,14.2,21.9,11.0,2.8,0.6,-0.303611,36.080556
+#2023-08-02,Eldoret,12.8,21.0,10.3,2.6,0.6,0.520000,35.269444
+#2023-08-03,Nairobi,19.2,27.8,12.5,3.3,0.9,-1.286389,36.817223
+#2023-08-03,Kisumu,12.3,20.8,10.0,2.6,0.6,-0.102222,34.761944
+#2023-08-03,Mombasa,24.7,36.2,15.8,4.2,1.2,-4.043056,39.668889
+#2023-08-03,Nakuru,14.5,22.2,11.4,3.0,0.7,-0.303611,36.080556
+#2023-08-03,Eldoret,13.4,22.3,10.7,2.8,0.7,0.520000,35.269444
+#2023-08-04,Nairobi,18.9,27.5,12.1,3.4,0.9,-1.286389,36.817223
+#2023-08-04,Kisumu,12.5,21.0,10.2,2.7,0.6,-0.102222,34.761944
+#2023-08-04,Mombasa,24.4,35.5,15.5,4.0,1.1,-4.043056,39.668889
+#2023-08-04,Nakuru,14.6,22.4,11.1,2.9,0.7,-0.303611,36.080556
+#2023-08-04,Eldoret,13.5,22.5,10.5,2.7,0.7,0.520000,35.269444
+
+
+
 
 # Define UI
 ui <- fluidPage(
-  titlePanel("Advanced Data Science App"),
+  titlePanel("Kenya Air Quality Dashboard"),
   
   sidebarLayout(
     sidebarPanel(
-      # Input: Variable selection for x and y axes
-      selectInput("x_var", "X-axis Variable:", choices = colnames(mtcars)),
-      selectInput("y_var", "Y-axis Variable:", choices = colnames(mtcars)),
+      # Input: Select city
+      selectInput("city", "Select City:", choices = unique(mydata$Location)),
       
-      # Input: Plot type selection
-      radioButtons("plot_type", "Plot Type:", choices = c("Scatter Plot", "Box Plot")),
+      # Input: Select pollutant
+      selectInput("pollutant", "Select Pollutant:", choices = colnames(mydata)[3:7]),
       
-      # Input: Data filtering
-      sliderInput("cyl_filter", "Filter by Cylinders:", min = 4, max = 8, value = c(4, 8))
+      # Input: Select plot type
+      selectInput("plot_type", "Select Plot Type:",
+                  choices = c("Line Plot", "Bar Chart", "Boxplot"))
     ),
     
     mainPanel(
       # Output: Data table
       DTOutput("data_table"),
       
-      # Output: Plot
-      plotOutput("data_plot"),
+      # Output: Map
+      leafletOutput("map"),
       
-      # Output: Summary statistics
-      verbatimTextOutput("summary_stats")
+      # Output: Plot
+      plotOutput("selected_plot")
     )
   )
 )
 
 # Define server
 server <- function(input, output) {
-  # Filter the dataset based on the selected number of cylinders
+  # Filter data based on user selections
   filtered_data <- reactive({
-    mtcars %>%
-      filter(cyl >= input$cyl_filter[1] & cyl <= input$cyl_filter[2])
+    mydata %>%
+      filter(Location == input$city)
   })
   
-  # Render the interactive data table
+  # Render data table
   output$data_table <- renderDT({
     datatable(filtered_data(), options = list(pageLength = 10))
   })
   
-  # Render the selected plot
-  output$data_plot <- renderPlot({
-    if (input$plot_type == "Scatter Plot") {
-      ggplot(filtered_data(), aes_string(x = input$x_var, y = input$y_var)) +
-        geom_point()
-    } else {
-      ggplot(filtered_data(), aes_string(x = factor(cyl), y = mtcars[[input$y_var]])) +
-        geom_boxplot()
-    }
+  # Render map
+  output$map <- renderLeaflet({
+    leaflet(filtered_data()) %>%
+      addTiles() %>%
+      addMarkers(~Longitude, ~Latitude, popup = ~Location)
   })
   
-  # Calculate and display summary statistics
-  output$summary_stats <- renderText({
-    summary_data <- summary(filtered_data()[, c(input$x_var, input$y_var)])
-    paste("Summary Statistics:\n", capture.output(print(summary_data)), collapse = "\n")
+  # Render selected plot based on user's choice
+  output$selected_plot <- renderPlot({
+    plot_data <- filtered_data()
+    if (input$plot_type == "Line Plot") {
+      # Line plot
+      ggplot(plot_data, aes(x = Date, y = .data[[input$pollutant]], color = Location, group = Location)) +
+        geom_line() +
+        geom_text(aes(label = round(.data[[input$pollutant]], 1), group = Location), nudge_x = 0.1, nudge_y = 0.05, size = 3) +
+        labs(title = paste("Line Plot for", input$pollutant),
+             x = "Date", y = input$pollutant)
+    } else if (input$plot_type == "Bar Chart") {
+      # Bar chart
+      ggplot(plot_data, aes(x = Date, y = .data[[input$pollutant]], fill = Date)) +
+        geom_bar(stat = "identity", position = "dodge") +
+        geom_text(aes(label = round(.data[[input$pollutant]], 1)), position = position_dodge(width = 0.9), vjust = -0.5, size = 3) +
+        labs(title = paste("Bar Chart for", input$pollutant),
+             x = "Date", y = input$pollutant)
+    } else if (input$plot_type == "Boxplot") {
+      # Boxplot
+      ggplot(plot_data, aes(x = as.factor(Date), y = .data[[input$pollutant]], fill = Location)) +
+        geom_boxplot() +
+        geom_text(aes(label = round(.data[[input$pollutant]], 1)), position = position_dodge(width = 0.75), vjust = -0.5, size = 3) +
+        labs(title = paste("Boxplot for", input$pollutant),
+             x = "Date", y = input$pollutant)
+    }
   })
 }
 
