@@ -32,6 +32,9 @@ mydata <- read.csv("air_quality_kenya.csv")
 
 
 
+# Load the extended imaginary air quality dataset
+mydata <- read.csv("air_quality_kenya.csv")
+
 # Define UI
 ui <- fluidPage(
   titlePanel("Kenya Air Quality Dashboard"),
@@ -46,7 +49,23 @@ ui <- fluidPage(
       
       # Input: Select plot type
       selectInput("plot_type", "Select Plot Type:",
-                  choices = c("Line Plot", "Bar Chart", "Boxplot"))
+                  choices = c("Line Plot", "Bar Chart", "Boxplot")),
+      
+      # Create a tabsetPanel for different inputs
+      tabsetPanel(
+        id = "tabs",
+        tabPanel("Individual City Plot",
+                 # Input: Select measurement for all cities comparison
+                 selectInput("all_cities_measurement", "Select Measurement for All Cities Comparison:", 
+                             choices = colnames(mydata)[3:7]),
+                 
+                 # Input: Button to plot all cities comparison
+                 actionButton("plot_all_cities_button", "Plot All Cities Comparison")),
+        tabPanel("All Cities Comparison",
+                 # Input: Select parameter for all cities comparison
+                 selectInput("all_cities_parameter", "Select Parameter for All Cities Comparison:", 
+                             choices = colnames(mydata)[3:7]))
+      )
     ),
     
     mainPanel(
@@ -57,13 +76,16 @@ ui <- fluidPage(
       leafletOutput("map"),
       
       # Output: Plot
-      plotOutput("selected_plot")
+      uiOutput("selected_plot_ui"),
+      
+      # Output: Barplot for all cities comparison
+      plotOutput("all_cities_barplot")
     )
   )
 )
 
 # Define server
-server <- function(input, output) {
+server <- function(input, output, session) {
   # Filter data based on user selections
   filtered_data <- reactive({
     mydata %>%
@@ -82,30 +104,66 @@ server <- function(input, output) {
       addMarkers(~Longitude, ~Latitude, popup = ~Location)
   })
   
-  # Render selected plot based on user's choice
-  output$selected_plot <- renderPlot({
+  # Render selected plot based on user's choice using renderUI
+  output$selected_plot_ui <- renderUI({
     plot_data <- filtered_data()
+    
     if (input$plot_type == "Line Plot") {
-      # Line plot
-      ggplot(plot_data, aes(x = Date, y = .data[[input$pollutant]], color = Location, group = Location)) +
-        geom_line() +
-        geom_text(aes(label = round(.data[[input$pollutant]], 1), group = Location), nudge_x = 0.1, nudge_y = 0.05, size = 3) +
-        labs(title = paste("Line Plot for", input$pollutant),
-             x = "Date", y = input$pollutant)
+      plotOutput("line_plot")
     } else if (input$plot_type == "Bar Chart") {
-      # Bar chart
-      ggplot(plot_data, aes(x = Date, y = .data[[input$pollutant]], fill = Date)) +
-        geom_bar(stat = "identity", position = "dodge") +
-        geom_text(aes(label = round(.data[[input$pollutant]], 1)), position = position_dodge(width = 0.9), vjust = -0.5, size = 3) +
-        labs(title = paste("Bar Chart for", input$pollutant),
-             x = "Date", y = input$pollutant)
+      plotOutput("bar_chart")
     } else if (input$plot_type == "Boxplot") {
-      # Boxplot
-      ggplot(plot_data, aes(x = as.factor(Date), y = .data[[input$pollutant]], fill = Location)) +
-        geom_boxplot() +
-        geom_text(aes(label = round(.data[[input$pollutant]], 1)), position = position_dodge(width = 0.75), vjust = -0.5, size = 3) +
-        labs(title = paste("Boxplot for", input$pollutant),
-             x = "Date", y = input$pollutant)
+      plotOutput("box_plot")
+    }
+  })
+  
+  # Line Plot
+  output$line_plot <- renderPlot({
+    plot_data <- filtered_data()
+    ggplot(plot_data, aes(x = Date, y = .data[[input$pollutant]], color = Location, group = Location)) +
+      geom_line() +
+      geom_text(aes(label = round(.data[[input$pollutant]], 1), group = Location), nudge_x = 0.1, nudge_y = 0.05, size = 3) +
+      labs(title = paste(input$pollutant, "LEVELS FOR",  toupper(input$city)),
+           x = "Date", y = input$pollutant)
+  })
+  
+  # Bar Chart
+  output$bar_chart <- renderPlot({
+    plot_data <- filtered_data()
+    ggplot(plot_data, aes(x = Date, y = .data[[input$pollutant]], fill = Date)) +
+      geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+      geom_text(aes(label = round(.data[[input$pollutant]], 1)), position = position_dodge(width = 0.9), vjust = -0.5, size = 3) +
+      labs(title = paste(input$pollutant, "LEVELS FOR",  toupper(input$city)),
+           x = "Date", y = input$pollutant) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+  })
+  
+  # Boxplot
+  output$box_plot <- renderPlot({
+    plot_data <- filtered_data()
+    ggplot(plot_data, aes(x = as.factor(Date), y = .data[[input$pollutant]], fill = Location)) +
+      geom_boxplot() +
+      geom_text(aes(label = round(.data[[input$pollutant]], 1)), position = position_dodge(width = 0.75), vjust = -0.5, size = 3) +
+      labs(title = paste(input$pollutant, "LEVELS FOR",  toupper(input$city)),
+           x = "Date", y = input$pollutant) +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotate x-axis labels
+  })
+  
+  # Create a reactive dataset for all cities
+  all_cities_data <- reactive({
+    mydata %>%
+      filter(.data[[input$all_cities_measurement]] > 0)
+  })
+  
+  # Render barplot for all cities comparison when the button is clicked
+  output$all_cities_barplot <- renderPlot({
+    if (nrow(all_cities_data()) > 0) {
+      ggplot(all_cities_data(), aes(x = Location, y = .data[[input$all_cities_measurement]])) +
+        geom_bar(stat = "identity", fill = "skyblue") +
+        geom_text(aes(label = round(.data[[input$all_cities_measurement]], 1)), vjust = -0.5, size = 3) +
+        labs(title = paste("Bar Chart for", input$all_cities_measurement),
+             x = "City", y = input$all_cities_measurement) +
+        theme(axis.text.x = element_text(angle = 45, hjust = 1))
     }
   })
 }
