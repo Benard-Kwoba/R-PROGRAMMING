@@ -1,0 +1,102 @@
+---
+title: "Datenanalyse"
+author: Kim Marie Krauß
+format: html
+editor: visual
+lang: de
+---
+
+# Genutzte Pakete
+
+```{r}
+pacman::p_load(readr, ggplot2, tidyr)
+```
+
+# Fragestellung
+
+Wie beeinflussen verschiedene Behandlungen und Umweltfaktoren die Blattlauspopulation in Birnenplantagen, und welche sind die entscheidenden Bestimmungsfaktoren für die Häufigkeit von Blattläusen?
+
+# Hypothesen
+
+Hypothese 1: Bestimmte Behandlungen könnten mit einer signifikanten Abnahme oder Zunahme der Blattlauspopulationen in Verbindung stehen.
+
+Hypothese 2: Umweltfaktoren wie höherer Wassergehalt oder Stickstoffgehalte könnten positiv mit einer erhöhten Blattlausanzahl korrelieren.
+
+Hypothese 3: Unterschiede zwischen den Blöcken könnten zu Variationen in den Blattlauspopulationen beitragen, wobei bestimmte Blöcke möglicherweise konstant höhere oder niedrigere Zählungen aufweisen.
+
+Hypothese 4: Das Vorhandensein von Infektionen könnte mit Veränderungen in der Blattlauspopulation in Zusammenhang stehen, entweder positiv oder negativ.
+
+# Tabellarische Übersicht der Fragen und Hypothesen
+
+| Forschungskomponente          | Forschungsfrage                                                                                                                                        | Hypothesen                                                                                                                                                                                               |
+|------------------------|-------------------------|-----------------------|
+| 1\. Einfluss der Behandlungen | Wie beeinflussen verschiedene Behandlungen (trt) die Blattlauspopulation in Birnenplantagen?                                                           | Hypothese 1: Bestimmte Behandlungen könnten mit einer signifikanten Abnahme oder Zunahme der Blattlauspopulationen in Verbindung stehen.                                                                 |
+| 2\. Umweltfaktoren            | Wie beeinflussen Umweltfaktoren (Wassergehalt Wasser, Stickstoffgehalt N, Trockenmassegehalt Trockenmasse) die Blattlauspopulation in Birnenplantagen? | Hypothese 2: Umweltfaktoren wie höherer Wassergehalt oder Stickstoffgehalte könnten positiv mit einer erhöhten Blattlausanzahl korrelieren.                                                              |
+| 3\. Blockvariabilität         | Tragen verschiedene Blöcke (Block) innerhalb der Obstplantage zu Variationen in den Blattlauspopulationen bei?                                         | Hypothese 3: Unterschiede zwischen den Blöcken könnten zu Variationen in den Blattlauspopulationen beitragen, wobei bestimmte Blöcke möglicherweise konstant höhere oder niedrigere Zählungen aufweisen. |
+| 4\. Infektionsstatus          | Wie ist die Beziehung zwischen dem Infektionsstatus (infected) und dem Vorkommen von Blattläusen in Birnenplantagen?                                   | Hypothese 4: Das Vorhandensein von Infektionen könnte mit Veränderungen in der Blattlauspopulation in Zusammenhang stehen, entweder positiv oder negativ.                                                |
+
+# Versuchsplan
+
+# Visualisierung der Daten in ggplot
+
+In den folgenden beiden Abbildungen sieht man die Daten, welche anhand von ggplot visualisiert wurden.
+
+In dem Punktwolken-Diagramm ist auf der x-Achse die Behandlung dargestellt und auf der y-Achse ist die Anzahl der Blattläuse angegeben.
+
+In der zweiten Abbildung sind Boxplots dargestellt. Auf der y-Achse ist die Anzahl der Blattläuse angegeben und zu jedem Umweltfaktor wurde ein Boxplot zu jeder Behandlung erstellt.
+
+```{r}
+#| echo: false
+
+pear_data <- read_csv2("Krauß_Kim_Marie.csv")
+
+pear_data[, c("water", "N", "drymatter")] <- lapply(pear_data[, c("water", "N", "drymatter")], function(x) as.numeric(sub(",", ".", x)))
+
+pear_data <- pear_data[complete.cases(pear_data$greenfly), ]
+
+melted_data <- gather(pear_data, key = "variable", value = "value", water, N, drymatter)
+
+ggplot(pear_data, aes(x = trt, y = greenfly)) +
+  geom_point(aes(color = trt), position = position_jitter(width = 0.2)) +
+  labs(title = "Greenfly Count by Treatment",
+       x = "Treatment",
+       y = "Greenfly Count") +
+  theme_minimal()
+
+```
+
+```{r}
+#| echo: false
+ggplot(melted_data, aes(x = factor(1), y = value, fill = factor(trt))) +
+  geom_boxplot() +
+  facet_wrap(~ variable, scales = "free", ncol = 2) +
+  labs(title = "Greenfly Count by Environmental Factors",
+       x = NULL,
+       y = "Greenfly Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
+```
+
+STATISTISCHE ANALYSE MIT GREENFLY ENDPOINT
+
+Zusammenfassende Statistiken:
+
+```{r}
+#| echo: false
+# Summary statistics
+summary(pear_data$greenfly)
+
+```
+
+Gruppenweise Vergleiche:
+
+#Vergleichen Sie die Variable „greenfly" auf verschiedenen Ebenen einer anderen kategorialen Variablen (z. B. „trt").
+
+\# ANOVA
+
+```{r}
+#| echo: false
+anova_model <- aov(greenfly ~ trt, data = pear_data)
+summary(anova_model)
+```
