@@ -1,0 +1,146 @@
+Entity,Code,Year,Share of the population who cannot afford a healthy diet
+Australia,AUS,2017,0.7
+Australia,AUS,2018,0.7
+Australia,AUS,2019,0.7
+Australia,AUS,2020,0.7
+Australia,AUS,2021,0.7
+Austria,AUT,2017,0.6
+Austria,AUT,2018,0.8
+Austria,AUT,2019,0.8
+Austria,AUT,2020,1
+Austria,AUT,2021,0.9
+Belgium,BEL,2017,0.3
+Belgium,BEL,2018,0.2
+Belgium,BEL,2019,0.2
+Belgium,BEL,2020,0.2
+Belgium,BEL,2021,0.1
+Brazil,BRA,2017,19.6
+Brazil,BRA,2018,18.5
+Brazil,BRA,2019,18.8
+Brazil,BRA,2020,12.7
+Brazil,BRA,2021,22.4
+Canada,CAN,2017,0.7
+Canada,CAN,2018,0.7
+Canada,CAN,2019,0.7
+Canada,CAN,2020,0.7
+Canada,CAN,2021,0.4
+China,CHN,2017,16.6
+China,CHN,2018,13.6
+China,CHN,2019,12.2
+China,CHN,2020,15.9
+China,CHN,2021,10.9
+Denmark,DNK,2017,0.2
+Denmark,DNK,2018,0.2
+Denmark,DNK,2019,0.4
+Denmark,DNK,2020,0.3
+Denmark,DNK,2021,0.2
+Egypt,EGY,2017,67.4
+Egypt,EGY,2018,70.1
+Egypt,EGY,2019,67.2
+Egypt,EGY,2020,63.2
+Egypt,EGY,2021,61.6
+Finland,FIN,2017,0.1
+Finland,FIN,2018,0.2
+Finland,FIN,2019,0.1
+Finland,FIN,2020,0.1
+Finland,FIN,2021,0
+France,FRA,2017,0.1
+France,FRA,2018,0.1
+France,FRA,2019,0.3
+France,FRA,2020,0.3
+France,FRA,2021,0.2
+Germany,DEU,2017,0.7
+Germany,DEU,2018,0.2
+Germany,DEU,2019,0.2
+Germany,DEU,2020,0.2
+Germany,DEU,2021,0.2
+Greece,GRC,2017,3.8
+Greece,GRC,2018,2.1
+Greece,GRC,2019,2.9
+Greece,GRC,2020,2.7
+Greece,GRC,2021,2.2
+High-income countries,HIC,2017,1.9
+High-income countries,HIC,2018,1.7
+High-income countries,HIC,2019,1.5
+High-income countries,HIC,2020,1.5
+High-income countries,HIC,2021,1.3
+Iceland,ISL,2017,0
+Iceland,ISL,2018,0
+Iceland,ISL,2019,0
+Iceland,ISL,2020,0
+Iceland,ISL,2021,0.1
+India,IND,2017,78.8
+India,IND,2018,73.2
+India,IND,2019,71.4
+India,IND,2020,76.2
+India,IND,2021,74.1
+Ireland,IRL,2017,0.4
+Ireland,IRL,2018,0.1
+Ireland,IRL,2019,0.1
+Ireland,IRL,2020,0.2
+Ireland,IRL,2021,0.1
+Italy,ITA,2017,2.8
+Italy,ITA,2018,2.8
+Italy,ITA,2019,2.1
+Italy,ITA,2020,1.8
+Italy,ITA,2021,1.5
+Japan,JPN,2017,2.7
+Japan,JPN,2018,2.7
+Japan,JPN,2019,2.5
+Japan,JPN,2020,2.7
+Japan,JPN,2021,2
+Low-income countries,LIC,2017,88.8
+Low-income countries,LIC,2018,87.5
+Low-income countries,LIC,2019,86.7
+Low-income countries,LIC,2020,86.9
+Low-income countries,LIC,2021,86.1
+Lower-middle-income countries,LMIC,2017,72.3
+Lower-middle-income countries,LMIC,2018,69.3
+Lower-middle-income countries,LMIC,2019,68.3
+Lower-middle-income countries,LMIC,2020,71
+Lower-middle-income countries,LMIC,2021,70.2
+Mexico,MEX,2017,24.3
+Mexico,MEX,2018,23.1
+Mexico,MEX,2019,21.6
+Mexico,MEX,2020,23.1
+Mexico,MEX,2021,20.2
+Nepal,NPL,2017,80.3
+Nepal,NPL,2018,77.2
+Nepal,NPL,2019,75
+Nepal,NPL,2020,77.1
+Nepal,NPL,2021,76.4
+Netherlands,NLD,2017,0.4
+Netherlands,NLD,2018,0.3
+Netherlands,NLD,2019,0.2
+Netherlands,NLD,2020,0.2
+Netherlands,NLD,2021,0.1
+Norway,NOR,2017,0.6
+Norway,NOR,2018,0.4
+Norway,NOR,2019,0.4
+Norway,NOR,2020,0.5
+Norway,NOR,2021,0.3
+Poland,POL,2017,1
+Poland,POL,2018,1.5
+Poland,POL,2019,1.1
+Poland,POL,2020,1.3
+Poland,POL,2021,0.5
+Russia,RUS,2017,3.3
+Russia,RUS,2018,2.9
+Russia,RUS,2019,2.5
+Russia,RUS,2020,2.8
+Russia,RUS,2021,2.6
+United States,USA,2017,2
+United States,USA,2018,1.7
+United States,USA,2019,1.5
+United States,USA,2020,1.2
+United States,USA,2021,1.2
+Upper-middle-income countries,UMIC,2017,17.3
+Upper-middle-income countries,UMIC,2018,15.2
+Upper-middle-income countries,UMIC,2019,14.4
+Upper-middle-income countries,UMIC,2020,16.6
+Upper-middle-income countries,UMIC,2021,14.1
+World,W,2017,43.8
+World,W,2018,41.8
+World,W,2019,41.2
+World,W,2020,43.3
+World,W,2021,42.2
