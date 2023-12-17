@@ -14,7 +14,7 @@ ui <- fluidPage(
         sidebarPanel(
             sliderInput("years", "Jahre:", min = min(data$Year), max = max(data$Year), step = 1, value = c(min(data$Year), max(data$Year))),
             selectInput("selected_countries", "Select Countries:", choices = unique(data$Entity), multiple = TRUE),
-            radioButtons("se", "Darstellung:", c("Balkendiagramm" = "yes", "Kreisdiagramm" = "no"), selected = "yes")
+            radioButtons("chart_type", "Chart Type:", c("Bar Chart" = "bar", "Pie Chart" = "pie", "Line Graph" = "line"), selected = "bar")
         ),
         mainPanel(
             plotOutput("plot")
@@ -24,13 +24,11 @@ ui <- fluidPage(
 
 server <- function(input, output) {
     output$plot <- renderPlot({
-        se_flag <- input$se == "yes"
-        
         filtered_data <- data %>%
             filter(Entity %in% input$selected_countries) %>%
             filter(Year >= input$years[1] & Year <= input$years[2])
         
-        if (se_flag) {
+        if (input$chart_type == "bar") {
             ggplot(filtered_data, aes(x = Year, y = `Share of the population who cannot afford a healthy diet`, fill = Entity)) +
                 geom_bar(stat = "identity") +
                 facet_wrap(~Entity, scales = "free_y") +
@@ -41,8 +39,7 @@ server <- function(input, output) {
                 ggtitle("Global Dietary Insecurity Report, 2021") +
                 scale_fill_manual(name = "World Categories", values = c("Australia" = "blue", "Austria" = "red", "Belgium" = "yellow", "Brazil" = "green", "Canada" = "orange", "China" = "magenta", "Denmark" = "purple", "Egypt" = "darkgreen", "Finland" = "lightblue", "France" = "darkred", "Germany" = "gold", "Greece" = "aquamarine", "Iceland" = "darksalmon", "India" = "darkkhaki", "Ireland" = "brown2", "Italy" = "seagreen2", "Japan" = "violet", "Mexico" = "azure4", "Nepal" = "burlywood", "Netherlands" = "chartreuse3", "Norway" = "cornflowerblue", "Poland" = "chocolate", "Russia" = "cornsilk", "United States" = "cornsilk4", "High-income countries" = "cyan2", "Low-income countries" = "darkolivegreen1", "Lower-middle-income countries" = "darkorchid", "Upper-middle-income countries" = "darkslategray4", "World" = "firebrick1"),
                                   labels = c("AUS - Australia", "AUT - Austria", "BEL - Belgium", "BRA - Brazil", "CAN - Canada", "CHN - China", "DNK - Denmark", "EGY - Egypt", "FIN - Finland", "FRA - France", "DEU- Germany", "GRC - Greece", "ISL - Iceland", "IND - India", "IRL - Ireland", "ITA - Italy", "JPN - Japan", "MEX - Mexico", "NPL - Nepal", "NLD - Netherlands", "NOR - Norway", "POL - Poland", "RUS - Russia", "USA - United States", "HIC - High Income Countries", "LIC - Low Income Countries", "LMIC - Lower Middle Income Countries", "UMIC - Upper Middle Income Countries", "W- World"))
-        } else {
-            # Pie chart when standard deviation is "No"
+        } else if (input$chart_type == "pie") {
             ggplot(filtered_data, aes(x = "", y = `Share of the population who cannot afford a healthy diet`, fill = Entity)) +
                 geom_bar(stat = "identity", width = 1) +
                 geom_text(aes(label = scales::percent(`Share of the population who cannot afford a healthy diet` / sum(`Share of the population who cannot afford a healthy diet`))),
@@ -53,6 +50,18 @@ server <- function(input, output) {
                 ggtitle("Global Dietary Insecurity Report, 2021") +
                 scale_fill_manual(name = "World Categories", values = c("Australia" = "blue", "Austria" = "red", "Belgium" = "yellow", "Brazil" = "green", "Canada" = "orange", "China" = "magenta", "Denmark" = "purple", "Egypt" = "darkgreen", "Finland" = "lightblue", "France" = "darkred", "Germany" = "gold", "Greece" = "aquamarine", "Iceland" = "darksalmon", "India" = "darkkhaki", "Ireland" = "brown2", "Italy" = "seagreen2", "Japan" = "violet", "Mexico" = "azure4", "Nepal" = "burlywood", "Netherlands" = "chartreuse3", "Norway" = "cornflowerblue", "Poland" = "chocolate", "Russia" = "cornsilk", "United States" = "cornsilk4", "High-income countries" = "cyan2", "Low-income countries" = "darkolivegreen1", "Lower-middle-income countries" = "darkorchid", "Upper-middle-income countries" = "darkslategray4", "World" = "firebrick1"),
                                   labels = c("AUS - Australia", "AUT - Austria", "BEL - Belgium", "BRA - Brazil", "CAN - Canada", "CHN - China", "DNK - Denmark", "EGY - Egypt", "FIN - Finland", "FRA - France", "DEU- Germany", "GRC - Greece", "ISL - Iceland", "IND - India", "IRL - Ireland", "ITA - Italy", "JPN - Japan", "MEX - Mexico", "NPL - Nepal", "NLD - Netherlands", "NOR - Norway", "POL - Poland", "RUS - Russia", "USA - United States", "HIC - High Income Countries", "LIC - Low Income Countries", "LMIC - Lower Middle Income Countries", "UMIC - Upper Middle Income Countries", "W- World"))
+        } else {
+            # Line graph when chart type is "Line Graph"
+            ggplot(filtered_data, aes(x = Year, y = `Share of the population who cannot afford a healthy diet`, color = Entity)) +
+                geom_point() +
+                geom_line() +
+                theme_bw() +
+                theme(legend.position = "bottom") +
+                xlab("Year") +
+                ylab("Share of the population who cannot afford a healthy diet") +
+                ggtitle("Global Dietary Insecurity Report, 2021") +
+                scale_color_manual(name = "World Categories", values = c("Australia" = "blue", "Austria" = "red", "Belgium" = "yellow", "Brazil" = "green", "Canada" = "orange", "China" = "magenta", "Denmark" = "purple", "Egypt" = "darkgreen", "Finland" = "lightblue", "France" = "darkred", "Germany" = "gold", "Greece" = "aquamarine", "Iceland" = "darksalmon", "India" = "darkkhaki", "Ireland" = "brown2", "Italy" = "seagreen2", "Japan" = "violet", "Mexico" = "azure4", "Nepal" = "burlywood", "Netherlands" = "chartreuse3", "Norway" = "cornflowerblue", "Poland" = "chocolate", "Russia" = "cornsilk", "United States" = "cornsilk4", "High-income countries" = "cyan2", "Low-income countries" = "darkolivegreen1", "Lower-middle-income countries" = "darkorchid", "Upper-middle-income countries" = "darkslategray4", "World" = "firebrick1"),
+                                   labels = c("AUS - Australia", "AUT - Austria", "BEL - Belgium", "BRA - Brazil", "CAN - Canada", "CHN - China", "DNK - Denmark", "EGY - Egypt", "FIN - Finland", "FRA - France", "DEU- Germany", "GRC - Greece", "ISL - Iceland", "IND - India", "IRL - Ireland", "ITA - Italy", "JPN - Japan", "MEX - Mexico", "NPL - Nepal", "NLD - Netherlands", "NOR - Norway", "POL - Poland", "RUS - Russia", "USA - United States", "HIC - High Income Countries", "LIC - Low Income Countries", "LMIC - Lower Middle Income Countries", "UMIC - Upper Middle Income Countries", "W- World"))
         }
     })
 }
