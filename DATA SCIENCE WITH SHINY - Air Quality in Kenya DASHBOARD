@@ -1,3 +1,4 @@
+# REFRESHER ON R
 library(shiny)
 library(DT)
 library(ggplot2)
@@ -177,6 +178,7 @@ server <- function(input, output, session) {
     }
   })
 }
+options(shiny.launch.browser = TRUE)  # this ensures images of map is visible no thumbnails in RStudio
 
 # Create Shiny app
 shinyApp(ui = ui, server = server)
