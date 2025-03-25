@@ -1,0 +1,78 @@
+# Define a numeric vector for iteration
+numbers <- c(10, 20, 30)
+
+# Define a scalar value
+scalar_value <- 5
+
+# Define another vector for membership checks
+membership_vec <- c(15, 25, 35)
+
+# Logical vector for element-wise operations
+logical_vec1 <- c(TRUE, FALSE, TRUE)
+logical_vec2 <- c(FALSE, TRUE, TRUE)
+
+# Define a named list for assignment operator demonstration
+result_list <- list()
+
+# Iterating through the vector 'numbers': uses in
+for (num in numbers) {
+  
+  # Arithmetic Operators
+  sum_result <- num + scalar_value   # Addition
+  diff_result <- num - scalar_value  # Subtraction
+  prod_result <- num * scalar_value  # Multiplication
+  div_result <- num / scalar_value   # Division
+  exp_result <- num ^ 2              # Exponentiation (num^2)
+  mod_result <- num %% 7             # Modulus (remainder after division)
+  int_div_result <- num %/% 7        # Integer division (quotient)
+  
+  # Logical Operators (checking properties of numbers)
+  is_large <- num > 15               # Greater than
+  is_small <- num < 25               # Less than
+  is_equal <- num == 20              # Equality
+  is_not_equal <- num != 10           # Not equal
+  is_in_range <- num >= 10 & num <= 30  # Logical AND (&) for element-wise comparison
+  either_condition <- num < 10 | num > 25  # Logical OR (|) for element-wise
+  
+  # Membership check using `%in%`
+  is_member <- num %in% membership_vec  # Checks if 'num' exists in 'membership_vec'
+  
+  # Short-circuit logical operators
+  and_short_circuit <- is_large && is_small  # `&&` evaluates only first element
+  or_short_circuit <- is_large || is_small   # `||` evaluates only first element
+  
+  # Logical Operators for Vectorized Conditions
+  vector_and <- logical_vec1 & logical_vec2  # Element-wise AND for vectors
+  vector_or  <- logical_vec1 | logical_vec2  # Element-wise OR for vectors
+  
+  # Negation
+  not_large <- !is_large  # Logical NOT
+  
+  # Assignment Operators
+  result_list[[paste("Result_for_", num)]] <- sum_result  # `<-` assigns sum result into list
+  
+  num <<- num + 1  # Global assignment using `<<-`, modifies 'num' outside function scope
+  
+  100 -> result_right  # Assigns 100 to 'result_right' using `->`
+  200 ->> result_global # Global rightward assignment `->>`
+  
+  # Print results for each iteration
+  print(paste("Number:", num))
+  print(paste("Sum:", sum_result, "Difference:", diff_result))
+  print(paste("Multiplication:", prod_result, "Division:", div_result))
+  print(paste("Exponentiation:", exp_result, "Modulus:", mod_result, "Integer Division:", int_div_result))
+  print(paste("is_large:", is_large, "is_small:", is_small))
+  print(paste("is_equal:", is_equal, "is_not_equal:", is_not_equal))
+  print(paste("is_in_range:", is_in_range, "either_condition:", either_condition))
+  print(paste("is_member:", is_member))
+  print(paste("Vectorized AND:", paste(vector_and, collapse = ", ")))  # merged into a single string, with each element separated by ", ".
+  print(paste("Vectorized OR:", paste(vector_or, collapse = ", ")))
+  print(paste("and_short_circuit:", and_short_circuit, "or_short_circuit:", or_short_circuit))
+  print(paste("not_large:", not_large))
+  print("------")
+}
+
+# Checking global assignments after the loop
+print(paste("Global result (<<-):", num))
+print(paste("Right-assigned variable (->):", result_right))
+print(paste("Right global (->>):", result_global))
