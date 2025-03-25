@@ -65,7 +65,7 @@ for (num in numbers) {
   print(paste("is_equal:", is_equal, "is_not_equal:", is_not_equal))
   print(paste("is_in_range:", is_in_range, "either_condition:", either_condition))
   print(paste("is_member:", is_member))
-  print(paste("Vectorized AND:", paste(vector_and, collapse = ", ")))  # merged into a single string, with each element separated by ", ".
+  print(paste("Vectorized AND:", paste(vector_and, collapse = ", ")))  # merged into a single string, with each element separated by ", ". Collapse is used only when working with vectors.
   print(paste("Vectorized OR:", paste(vector_or, collapse = ", ")))
   print(paste("and_short_circuit:", and_short_circuit, "or_short_circuit:", or_short_circuit))
   print(paste("not_large:", not_large))
